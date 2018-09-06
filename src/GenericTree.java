@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 public class GenericTree {
@@ -128,5 +129,143 @@ public class GenericTree {
         return maxChildheight;
     }
 
+    public boolean find(int data) {
+        return this.find(this.root, data);
+    }
+
+    private boolean find(Node node, int data) {
+        if (node.data == data) { // if found at root node, return true
+            return true;
+        }
+        for (int i = 0; i < node.children.size(); i++) { // look for it in all children
+            boolean foundInChild = this.find(node.children.get(i), data); // call find for each child
+            if (foundInChild){
+                return true;
+            }
+        }
+
+        return false; // if not found, return false
+    }
+
+    private Integer justLarger(int data) { // to find the value just larger than data
+        Node jl = this.justLarger(this.root, data);
+
+        if (jl != null) {
+            return jl.data;
+        } else {
+            return null;
+        }
+    }
+
+    private Node justLarger(Node node, int data) {
+        Node rv = null;
+
+        if (node.data > data) { // if larger than data, assign node to rv
+            rv = node;
+        }
+        for (int i = 0; i < node.children.size(); i++) { // run a loop on all children
+            Node cjl = this.justLarger(node.children.get(i), data); // call function on all children nodes
+            if (cjl == null) { // if childnode data isnt larger, continue
+                continue;
+            } else { // if it is larger than given data
+                if (rv == null) { // and if rv is still null
+                    rv = cjl; // then rv gets child node
+                } else { // if rv is not null, and has a node
+                    if (cjl.data < rv.data) { // then compare and keep the smaller one
+                        rv = cjl;             // because we need the justLarger data
+                    }
+                }
+            }
+        }
+
+        return rv; // return the node
+    }
+
+    public int kthSmallest(int k) {
+        int rv = Integer.MIN_VALUE; // set it to the min possible integer
+
+        int counter = 0;
+        while (counter < k) {
+            rv = justLarger(this.root, rv).data; // with every iteration, rv gets one larger value
+            counter++;
+        }
+
+        return rv;
+    }
+
+    public void mirror() {
+        this.mirror(this.root);
+    }
+
+    private void mirror(Node node) {
+        int left = 0, right = node.children.size() - 1;
+        while(left <= right) { // while all nodes are traversed, swap left and right
+            Node temp = node.children.get(left);
+            node.children.set(left, node.children.get(right));
+            node.children.set(right, temp);
+
+            left++;
+            right--;
+        }
+        // run the same mirror function for all children
+        for (int i = 0; i < node.children.size(); i++) {
+            this.mirror(node.children.get(i));
+        }
+    }
+
+    public void printAtLevel(int level) {
+        this.printAtLevel(this.root, level);
+    }
+
+    private void printAtLevel(Node node, int level) { //
+        if(level == 0) { // floor hit!
+            System.out.println(node.data);
+            return;
+        }
+
+        for (int i = 0; i < node.children.size(); i++) {
+            this.printAtLevel(node.children.get(i), level - 1); // recursive call to all children, at 1 level lower
+        }
+    }
+
+    public void preOrderTraversal() {
+        this.preOrderTraversal(this.root);
+    }
+
+    private void preOrderTraversal(Node node) {
+        System.out.print(node.data + ", "); // print before recursive call
+        for (int i = 0; i < node.children.size(); i++) {
+            this.preOrderTraversal(node.children.get(i));
+        }
+    }
+
+    public void postOrderTraversal() {
+        this.postOrderTraversal(this.root);
+    }
+
+    private void postOrderTraversal(Node node) {
+        for (int i = 0; i < node.children.size(); i++) {
+            this.postOrderTraversal(node.children.get(i));
+        }
+        System.out.print(node.data + ", "); // print after recursive call
+    }
+
+    // BFS  - Level Order Traversal in a tree
+    // Step 1 - Remove from tree
+    // Step 2 - Print
+    // Step 3 - Enqueue all its children
+    public void levelOrderTraversal() { // iterative
+        LinkedList<Node> queue = new LinkedList<>(); // using only addLast and removeFirst
+        queue.addLast(this.root);
+        while (!queue.isEmpty()) {
+            Node rem = queue.removeFirst(); // Step 1
+            System.out.print(rem.data + ", "); // Step 2
+
+            for (Node child : rem.children) { // Step 3
+                queue.addLast(child); // Step 3
+            }
+        }
+        System.out.println(".");
+    }
 
 }

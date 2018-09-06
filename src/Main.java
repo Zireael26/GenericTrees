@@ -1,6 +1,10 @@
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        GenericTree genericTree = new GenericTree();
+
+        genericTree.levelOrderTraversal();
+        genericTree.mirror();
+        genericTree.levelOrderTraversal();
     }
 }
